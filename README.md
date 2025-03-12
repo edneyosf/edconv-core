@@ -9,3 +9,20 @@
 ## Supported formats
 
 Audio: `AAC (libfdk_aac)`
+
+## Usage
+
+```
+  -channels int
+    	Number of channels (1 for mono, 2 for stereo, 6 for 5.1, 8 for 7.1) (default 2)
+  -format string
+    	File format (aac)
+  -input string
+    	Input file
+  -kbps int
+    	Bitrate in kbps (192 for 192 kbps) (default 192)
+  -output string
+    	Output file (without extension)
+  -version
+    	Show the version of the application
+```
