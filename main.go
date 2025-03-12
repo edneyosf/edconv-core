@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"edconv/converter"
 )
 
 const appName = "Edconv"
-const version = "1.0.0"
+const version = "1.2.0"
 const ffmpegVersion = "7.1.1"
 const channelsDefault = 2
 const kbpsDefault = 192
@@ -20,9 +22,9 @@ var ffmpeg []byte
 func main() {
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
-	outputFile := flag.String("output", "", "Output file (without extension)")
-	format := flag.String("format", "", "File format (aac)")
-	channels := flag.Int("channels", channelsDefault, "Number of channels (1 for mono, 2 for stereo, 6 for 5.1, 8 for 7.1)")
+	outputFile := flag.String("output", "", "Output file")
+	format := flag.String("format", "", "File format: aac")
+	channels := flag.Int("channels", channelsDefault, "Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound, 26 for downmixing stereo to 5.1")
 	kbps := flag.Int("kbps", kbpsDefault, "Bitrate in kbps (192 for 192 kbps)")
 	flag.Parse()
 
@@ -75,7 +77,7 @@ func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outpu
 
 	switch *format {
     case "aac":
-		err = convertToAAC(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps)
+		err = converter.ToAAC(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps)
     default:
         log.Fatal("Unsupported format")
     }
