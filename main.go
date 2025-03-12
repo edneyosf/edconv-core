@@ -1,52 +1,87 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
-	"os"
-	"os/exec"
 	"log"
+	"os"
 )
 
-const ffmpeg = "ffmpeg-ed"
+const version = "1.0.0"
+const ffmpegVersion = "7.1.1"
+const channelsDefault = 2
+const kbpsDefault = 192
+
+//go:embed ffmpeg711
+var ffmpeg []byte
 
 func main() {
+	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
-	outputFile := flag.String("output", "", "Output file")
-	channels := flag.Int("channels", 2, "Number of channels (1 for mono, 2 for stereo, 6 for 5.1, 8 for 7.1)")
-	kbps := flag.Int("kbps", 192, "Bitrate in kbps (192 for 192 kbps)")
+	outputFile := flag.String("output", "", "Output file (without extension)")
+	format := flag.String("format", "", "File format (aac)")
+	channels := flag.Int("channels", channelsDefault, "Number of channels (1 for mono, 2 for stereo, 6 for 5.1, 8 for 7.1)")
+	kbps := flag.Int("kbps", kbpsDefault, "Bitrate in kbps (192 for 192 kbps)")
 	flag.Parse()
 
-	if *inputFile == "" || *outputFile == "" {
-		log.Fatal("You must provide both the input and output files.")
-	}
-
-	err := convertToAAC(*inputFile, *outputFile, *channels, *kbps)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkFlags(showVersion, format, inputFile, outputFile)
+	ffmpegFile := retrieveFFmpeg()
+	formatHandler(format, ffmpegFile, inputFile, outputFile, channels, kbps)
 
 	fmt.Println("Success!")
 }
 
-// AAC com FDK-AAC
-func convertToAAC(inputFile, outputFile string, channels int, kbps int) error {
-	cmd := exec.Command(
-		ffmpeg, 
-		"-i", inputFile, 
-		"-loglevel", "warning",
-		"-c:a", "libfdk_aac", 
-		"-b:a", fmt.Sprintf("%dk", kbps), 
-		"-ac", fmt.Sprintf("%d", channels), 
-		fmt.Sprintf("%s.aac", outputFile))
+func showVersions(showVersion* bool) {
+	if *showVersion {
+		fmt.Println("Conved v" + version) 
+		fmt.Println("FFmpeg v" + ffmpegVersion)
+		os.Exit(0)
+	}
+}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+func checkFlags(showVersion* bool, format* string, inputFile* string, outputFile* string) {
 
-	err := cmd.Run()
+	showVersions(showVersion)
+
+	if *format == "" || *inputFile == "" || *outputFile == "" {
+		log.Fatal("You must specify the format, input file, and output file.")
+	}
+}
+
+func retrieveFFmpeg() *os.File {
+	tmpFile, err := os.CreateTemp("", "edconv-ffmpeg-")
 	if err != nil {
-		return fmt.Errorf("error: %v", err)
+		log.Fatalf("Error creating temporary file: %v\n", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.Write(ffmpeg)
+	if err != nil {
+		log.Fatalf("Error writing binary to temporary file: %v\n", err)
 	}
 
-	return nil
+	err = os.Chmod(tmpFile.Name(), 0755)
+	if err != nil {
+		log.Fatalf("Error setting execution permissions: %v\n", err)
+	}
+
+	tmpFile.Close()
+
+	return tmpFile
+}
+
+func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outputFile* string, channels* int, kbps* int) {
+	var err error
+
+	switch *format {
+    case "aac":
+		err = convertToAAC(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps)
+    default:
+        log.Fatal("Unsupported format")
+    }
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
