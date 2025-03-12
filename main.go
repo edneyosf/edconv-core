@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+const appName = "Edconv"
 const version = "1.0.0"
 const ffmpegVersion = "7.1.1"
 const channelsDefault = 2
@@ -33,7 +34,7 @@ func main() {
 
 func showVersions(showVersion* bool) {
 	if *showVersion {
-		fmt.Println("Conved v" + version) 
+		fmt.Println(appName + " v" + version) 
 		fmt.Println("FFmpeg v" + ffmpegVersion)
 		os.Exit(0)
 	}
