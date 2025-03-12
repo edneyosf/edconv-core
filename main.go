@@ -26,8 +26,7 @@ func main() {
 	flag.Parse()
 
 	checkFlags(showVersion, format, inputFile, outputFile)
-	ffmpegFile := retrieveFFmpeg()
-	formatHandler(format, ffmpegFile, inputFile, outputFile, channels, kbps)
+	formatHandler(format, retrieveFFmpeg(), inputFile, outputFile, channels, kbps)
 
 	fmt.Println("Success!")
 }
@@ -54,7 +53,6 @@ func retrieveFFmpeg() *os.File {
 	if err != nil {
 		log.Fatalf("Error creating temporary file: %v\n", err)
 	}
-	defer os.Remove(tmpFile.Name())
 
 	_, err = tmpFile.Write(ffmpeg)
 	if err != nil {
@@ -80,6 +78,8 @@ func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outpu
     default:
         log.Fatal("Unsupported format")
     }
+
+	defer os.Remove(ffmpegFile.Name())
 
 	if err != nil {
 		log.Fatal(err)
