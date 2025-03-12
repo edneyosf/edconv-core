@@ -13,7 +13,7 @@ const ffmpegVersion = "7.1.1"
 const channelsDefault = 2
 const kbpsDefault = 192
 
-//go:embed ffmpeg711
+//go:embed bin/ffmpeg711
 var ffmpeg []byte
 
 func main() {
