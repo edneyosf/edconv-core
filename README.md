@@ -16,7 +16,7 @@ Audio: `AAC (libfdk_aac)`
   -channels int
     	Number of channels (1 for mono, 2 for stereo, 6 for 5.1, 8 for 7.1) (default 2)
   -format string
-    	File format (AAC, EAC3)
+    	File format (AAC and EAC3)
   -input string
     	Input file
   -kbps int
