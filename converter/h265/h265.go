@@ -1,17 +1,16 @@
-package av1
+package h265
 
 import (
+	"edconv/converter"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
-
-	"edconv/converter"
 )
 
-const codec = "libsvtav1"
+const codec = "libx265"
 
-// AV1 com SVT
+// H.265 com x265
 func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, presetIn string, crfIn int, bitIn int, widthIn int, noAudio bool) error {
 	values := []string{}
 	bit := bitHandler(bitIn)
@@ -21,7 +20,6 @@ func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, presetIn stri
 		"-c:v", codec,
 		"-preset", presetIn,
 		"-crf", fmt.Sprintf("%d", crfIn),
-		"-profile:v", "0",
 		"-pix_fmt", bit,
 		"-vf", fmt.Sprintf("scale=%d:-1", widthIn),
 		"-b:v", "0",
