@@ -8,7 +8,7 @@
 
 ## Supported formats
 
-Audio: `AAC (libfdk_aac), E-AC3`
+Audio: `AAC (libfdk_aac) and E-AC3`
 
 ## Usage
 
