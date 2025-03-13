@@ -1,3 +1,3 @@
 package converter
 
-const LogLevel = "warning"
+const LogLevel = "info" //quiet, panic, fatal, error, warning, info, verbose, debug, trace

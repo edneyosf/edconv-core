@@ -8,14 +8,9 @@ import (
 	"os"
 
 	"edconv/converter/aac"
+	"edconv/converter/av1"
 	"edconv/converter/eac3"
 )
-
-const appName = "Edconv"
-const version = "1.2.2"
-const ffmpegVersion = "7.1.1"
-const channelsDefault = 2
-const kbpsDefault = 192
 
 //go:embed bin/ffmpeg711
 var ffmpeg []byte
@@ -24,14 +19,19 @@ func main() {
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
 	outputFile := flag.String("output", "", "Output file")
-	format := flag.String("format", "", "File format: AAC and E-AC3")
-	channels := flag.Int("channels", channelsDefault, "Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound, 62 for downmixing 5.1 to stereo")
+	format := flag.String("format", "", "File format: AAC, E-AC3 and AV1")
+	channels := flag.Int("channels", channelsDefault, "Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound and 62 for downmixing 5.1 to stereo")
 	kbps := flag.Int("kbps", kbpsDefault, "Bitrate in kbps (192 for 192 kbps)")
 	sampleRate := flag.String("sampleRate", "", "Sample rate (44100 for 44100Hz)")
+	preset := flag.Int("preset", defaultPreset, "Preset")
+	crf := flag.Int("crf", crfDefault, "Constant Rate Factor")
+	bit := flag.Int("bit", bitDefault, "Pixel format (8 for 8bit and 10 for 10bit)")
+	width := flag.Int("width", widthDefault, "Width (1920 for 1080p, 1280 for 720p and 3840 for 2160p)")
+	noAudio := flag.Bool("noAudio", false, "Video without audio")
 	flag.Parse()
 
 	checkFlags(showVersion, format, inputFile, outputFile)
-	formatHandler(format, retrieveFFmpeg(), inputFile, outputFile, channels, kbps, sampleRate)
+	formatHandler(format, retrieveFFmpeg(), inputFile, outputFile, channels, kbps, sampleRate, preset, crf, bit, width, noAudio)
 
 	fmt.Println("Success!")
 }
@@ -74,7 +74,9 @@ func retrieveFFmpeg() *os.File {
 	return tmpFile
 }
 
-func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outputFile* string, channels* int, kbps* int, sampleRate* string) {
+func formatHandler(
+	format* string, ffmpegFile* os.File, inputFile* string, outputFile* string, channels* int, kbps* int, sampleRate* string,
+	preset* int, crf* int, bit* int, width* int, noAudio* bool) {
 	var err error
 
 	switch *format {
@@ -82,6 +84,8 @@ func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outpu
 		err = aac.Convert(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps, *sampleRate)
 	case "eac3":
 		err = eac3.Convert(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps, *sampleRate)	
+	case "av1":
+		err = av1.Convert(*ffmpegFile, *inputFile, *outputFile, *preset, *crf, *bit, *width, *noAudio)
     default:
         log.Fatal("Unsupported format")
     }
