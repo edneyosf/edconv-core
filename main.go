@@ -7,11 +7,12 @@ import (
 	"log"
 	"os"
 
-	"edconv/converter"
+	"edconv/converter/aac"
+	"edconv/converter/eac3"
 )
 
 const appName = "Edconv"
-const version = "1.2.1"
+const version = "1.2.2"
 const ffmpegVersion = "7.1.1"
 const channelsDefault = 2
 const kbpsDefault = 192
@@ -23,13 +24,14 @@ func main() {
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
 	outputFile := flag.String("output", "", "Output file")
-	format := flag.String("format", "", "File format: aac")
-	channels := flag.Int("channels", channelsDefault, "Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound, 26 for downmixing stereo to 5.1")
+	format := flag.String("format", "", "File format: AAC and E-AC3")
+	channels := flag.Int("channels", channelsDefault, "Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound, 62 for downmixing 5.1 to stereo")
 	kbps := flag.Int("kbps", kbpsDefault, "Bitrate in kbps (192 for 192 kbps)")
+	sampleRate := flag.String("sampleRate", "", "Sample rate (44100 for 44100Hz)")
 	flag.Parse()
 
 	checkFlags(showVersion, format, inputFile, outputFile)
-	formatHandler(format, retrieveFFmpeg(), inputFile, outputFile, channels, kbps)
+	formatHandler(format, retrieveFFmpeg(), inputFile, outputFile, channels, kbps, sampleRate)
 
 	fmt.Println("Success!")
 }
@@ -72,14 +74,14 @@ func retrieveFFmpeg() *os.File {
 	return tmpFile
 }
 
-func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outputFile* string, channels* int, kbps* int) {
+func formatHandler(format* string, ffmpegFile* os.File, inputFile* string, outputFile* string, channels* int, kbps* int, sampleRate* string) {
 	var err error
 
 	switch *format {
     case "aac":
-		err = converter.ToAAC(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps)
+		err = aac.Convert(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps, *sampleRate)
 	case "eac3":
-		err = converter.ToEAC3(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps)	
+		err = eac3.Convert(*ffmpegFile, *inputFile, *outputFile, *channels, *kbps, *sampleRate)	
     default:
         log.Fatal("Unsupported format")
     }
