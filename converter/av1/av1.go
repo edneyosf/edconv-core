@@ -11,6 +11,7 @@ import (
 
 const codec = "libsvtav1"
 
+// AV1 com SVT
 func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, presetIn int, crfIn int, bitIn int, widthIn int, noAudio bool) error {
 	values := []string{}
 	bit := bitHandler(bitIn)
