@@ -11,19 +11,19 @@ import (
 
 const codec = "eac3"
 
-func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, channelsIn int, kbpsIn int, sampleRate string) error {
+func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, kbpsIn, sampleRate string) error {
 	values := []string{}
-	kbps := fmt.Sprintf("%dk", kbpsIn)
+	kbps := fmt.Sprintf("%sk", kbpsIn)
 	channels,af := channelsHandler(channelsIn)
 	startValues := []string{
-		"-i", inputFileIn, 
+		"-i", inputFile, 
 		"-loglevel", converter.LogLevel,
 		"-c:a", codec,
 	}
 	endValues := []string{
 		"-b:a", kbps, 
 		"-ac", channels, 
-		outputFileIn,
+		outputFile,
 	}
 
 	values = append(values, startValues[:]...)
@@ -47,12 +47,12 @@ func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, channelsIn in
 	return nil
 }
 
-func channelsHandler(channelsIn int) (string, []string) {
+func channelsHandler(channelsIn string) (string, []string) {
 	var channel string
 	var af []string
 
 	switch channelsIn {
-	case 6:
+	case "6":
 		channel = "6"
     default:
         log.Fatal("Unsupported number of channels")

@@ -11,20 +11,20 @@ import (
 const codec = "libx265"
 
 // H.265 com x265
-func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, presetIn string, crfIn int, bitIn int, widthIn int, noAudio bool) error {
+func Convert(ffmpegFile os.File, inputFile, outputFile, preset, crf, bitIn, width string, noAudio bool) error {
 	values := []string{}
 	bit := bitHandler(bitIn)
 	startValues := []string{
-		"-i", inputFileIn, 
+		"-i", inputFile, 
 		"-loglevel", converter.LogLevel,
 		"-c:v", codec,
-		"-preset", presetIn,
-		"-crf", fmt.Sprintf("%d", crfIn),
+		"-preset", preset,
+		"-crf", crf,
 		"-pix_fmt", bit,
-		"-vf", fmt.Sprintf("scale=%d:-1", widthIn),
+		"-vf", fmt.Sprintf("scale=%s:-1", width),
 		"-b:v", "0",
 	}
-	endValues := []string{outputFileIn}
+	endValues := []string{outputFile}
 
 	values = append(values, startValues[:]...)
 	if(noAudio) {
@@ -46,13 +46,13 @@ func Convert(ffmpegFile os.File, inputFileIn, outputFileIn string, presetIn stri
 	return nil
 }
 
-func bitHandler(bitIn int) string {
+func bitHandler(bitIn string) string {
 	var bit string
 
 	switch bitIn {
-	case 8:
+	case "8":
 		bit = "yuv420p"
-	case 10:
+	case "10":
 		bit = "yuv420p10le"
     default:
         log.Fatal("Unsupported pixel format")
