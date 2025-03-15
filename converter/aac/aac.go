@@ -11,7 +11,6 @@ import (
 
 const codec = "libfdk_aac"
 
-// AAC com FDK-AAC
 func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate string) error {
 	values := []string{}
 	channels,af := channelsHandler(channelsIn)
