@@ -13,9 +13,6 @@ import (
 	"edconv/converter/h265"
 )
 
-//go:embed bin/ffmpeg711
-var ffmpeg []byte
-
 func main() {
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
@@ -43,7 +40,7 @@ func main() {
 	}
 
 	checkFlags(showVersion, format, inputFile, outputFile)
-	formatHandler(retrieveFFmpeg(), *format, *inputFile, *outputFile, *channels, *vbr, *kbps, *sampleRate, *preset, *crf, *bit, *width, *noAudio)
+	formatHandler(ffmpeg, *format, *inputFile, *outputFile, *channels, *vbr, *kbps, *sampleRate, *preset, *crf, *bit, *width, *noAudio)
 
 	fmt.Println("Success!")
 }
@@ -110,44 +107,21 @@ func checkFlags(showVersion* bool, format* string, inputFile* string, outputFile
 	}
 }
 
-func retrieveFFmpeg() os.File {
-	tmpFile, err := os.CreateTemp("", "edconv-ffmpeg-")
-	if err != nil {
-		log.Fatalf("Error creating temporary file: %v\n", err)
-	}
-
-	_, err = tmpFile.Write(ffmpeg)
-	if err != nil {
-		log.Fatalf("Error writing binary to temporary file: %v\n", err)
-	}
-
-	err = os.Chmod(tmpFile.Name(), 0755)
-	if err != nil {
-		log.Fatalf("Error setting execution permissions: %v\n", err)
-	}
-
-	tmpFile.Close()
-
-	return *tmpFile
-}
-
-func formatHandler(ffmpegFile os.File, format, inputFile, outputFile, channels, vbr, kbps, sampleRate, preset, crf, bit, width string, noAudio bool) {
+func formatHandler(ffmpeg, format, inputFile, outputFile, channels, vbr, kbps, sampleRate, preset, crf, bit, width string, noAudio bool) {
 	var err error
 
 	switch format {
     case "aac":
-		err = aac.Convert(ffmpegFile, inputFile, outputFile, channels, vbr, kbps, sampleRate)
+		err = aac.Convert(ffmpeg, inputFile, outputFile, channels, vbr, kbps, sampleRate)
 	case "eac3":
-		err = eac3.Convert(ffmpegFile, inputFile, outputFile, channels, kbps, sampleRate)	
+		err = eac3.Convert(ffmpeg, inputFile, outputFile, channels, kbps, sampleRate)	
 	case "av1":
-		err = av1.Convert(ffmpegFile, inputFile, outputFile, preset, crf, bit, width, noAudio)
+		err = av1.Convert(ffmpeg, inputFile, outputFile, preset, crf, bit, width, noAudio)
 	case "h265":	
-		err = h265.Convert(ffmpegFile, inputFile, outputFile, preset, crf, bit, width, noAudio)
+		err = h265.Convert(ffmpeg, inputFile, outputFile, preset, crf, bit, width, noAudio)
     default:
         log.Fatal("Unsupported format")
     }
-
-	defer os.Remove(ffmpegFile.Name())
 
 	if err != nil {
 		log.Fatal(err)

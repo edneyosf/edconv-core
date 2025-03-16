@@ -11,7 +11,7 @@ import (
 
 const codec = "eac3"
 
-func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, kbpsIn, sampleRate string) error {
+func Convert(ffmpeg, inputFile, outputFile, channelsIn, kbpsIn, sampleRate string) error {
 	values := []string{}
 	kbps := fmt.Sprintf("%sk", kbpsIn)
 	channels,af := channelsHandler(channelsIn)
@@ -35,7 +35,7 @@ func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, kbpsIn, samp
 	}
 	values = append(values, endValues[:]...)
 
-	cmd := exec.Command(ffmpegFile.Name(), values[:]...)
+	cmd := exec.Command(ffmpeg, values[:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

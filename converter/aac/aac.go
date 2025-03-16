@@ -11,7 +11,7 @@ import (
 
 const codec = "libfdk_aac"
 
-func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate string) error {
+func Convert(ffmpeg, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate string) error {
 	values := []string{}
 	channels,af := channelsHandler(channelsIn)
 	startValues := []string{
@@ -42,7 +42,7 @@ func Convert(ffmpegFile os.File, inputFile, outputFile, channelsIn, vbr, kbpsIn,
 
 	values = append(values, endValues[:]...)
 
-	cmd := exec.Command(ffmpegFile.Name(), values[:]...)
+	cmd := exec.Command(ffmpeg, values[:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

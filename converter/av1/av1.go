@@ -12,7 +12,7 @@ import (
 const codec = "libsvtav1"
 
 // AV1 com SVT
-func Convert(ffmpegFile os.File, inputFile, outputFile, preset, crf, bitIn, width string, noAudio bool) error {
+func Convert(ffmpeg, inputFile, outputFile, preset, crf, bitIn, width string, noAudio bool) error {
 	values := []string{}
 	bit := bitHandler(bitIn)
 	startValues := []string{
@@ -36,7 +36,7 @@ func Convert(ffmpegFile os.File, inputFile, outputFile, preset, crf, bitIn, widt
 	}
 	values = append(values, endValues[:]...)
 
-	cmd := exec.Command(ffmpegFile.Name(), values[:]...)
+	cmd := exec.Command(ffmpeg, values[:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
