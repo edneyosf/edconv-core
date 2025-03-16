@@ -14,6 +14,8 @@ import (
 )
 
 func main() {
+	var ffmpeg string
+
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
 	outputFile := flag.String("output", "", "Output file")
@@ -27,16 +29,23 @@ func main() {
 	bit := flag.String("bit", bitDefault, "Pixel format (8 for 8bit and 10 for 10bit)")
 	width := flag.String("width", widthDefault, "Width (1920 for 1080p, 1280 for 720p and 3840 for 2160p)")
 	noAudio := flag.Bool("noAudio", false, "Video without audio")
+	ffmpegPath := flag.String("ffmpeg", "", "FFmpeg path")
 	flag.Parse()
 
-	if(*kbps == "") {
+	if *kbps == "" {
 		*kbps = kbpsDefault(channels)
 	}
-	if(*preset == ""){
+	if *preset == "" {
 		*preset = presetDefault(format)
 	}
-	if(*crf == "") {
+	if *crf == "" {
 		*crf = crfDefault(format)
+	}
+
+	if *ffmpegPath != "" {
+		ffmpeg = *ffmpegPath
+	} else {
+		ffmpeg = ffmpegDefault
 	}
 
 	checkFlags(showVersion, format, inputFile, outputFile)

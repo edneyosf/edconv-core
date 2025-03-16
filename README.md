@@ -19,6 +19,8 @@ Audio: `AAC, E-AC3, AV1 (SVT) and H.265 (x265)`
         Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound and 62 for downmixing 5.1 to stereo (default "2")
   -crf string
         Constant Rate Factor (0-63 for av1 and 0-51 for h265)
+  -ffmpeg string
+        FFmpeg path
   -format string
         File format: aac, eac3, av1 and h265
   -input string
