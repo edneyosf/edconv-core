@@ -3,15 +3,11 @@ package av1
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
 
+	"edconv/cmd"
 	"edconv/converter"
 )
 
-const codec = "libsvtav1"
-
-// AV1 com SVT
 func Convert(ffmpeg, inputFile, outputFile, preset, crf, bitIn, width string, noAudio bool) error {
 	values := []string{}
 	bit := bitHandler(bitIn)
@@ -29,23 +25,16 @@ func Convert(ffmpeg, inputFile, outputFile, preset, crf, bitIn, width string, no
 	endValues := []string{outputFile}
 
 	values = append(values, startValues[:]...)
-	if(noAudio) {
+	
+	if noAudio {
 		values = append(values, "-an")
 	} else {
 		values = append(values, []string{"-c:a", "copy"}...)
 	}
+
 	values = append(values, endValues[:]...)
 
-	cmd := exec.Command(ffmpeg, values[:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
-	if err != nil { 
-		return fmt.Errorf("error: %v", err) 
-	}
-
-	return nil
+	return cmd.Run(ffmpeg, values)
 }
 
 func bitHandler(bitIn string) string {
@@ -53,11 +42,11 @@ func bitHandler(bitIn string) string {
 
 	switch bitIn {
 	case "8":
-		bit = "yuv420p"
+		bit = bit8
 	case "10":
-		bit = "yuv420p10le"
+		bit = bit10
     default:
-        log.Fatal("Unsupported pixel format")
+        log.Fatal("Error: Unsupported pixel format")
     }
 
 	return bit

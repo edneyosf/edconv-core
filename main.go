@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"flag"
 	"fmt"
 	"log"
@@ -11,10 +10,12 @@ import (
 	"edconv/converter/av1"
 	"edconv/converter/eac3"
 	"edconv/converter/h265"
+	"edconv/info"
 )
 
 func main() {
 	var ffmpeg string
+	var ffprobe string
 
 	showVersion := flag.Bool("version", false, "Show the version of the application")
 	inputFile := flag.String("input", "", "Input file")
@@ -30,6 +31,7 @@ func main() {
 	width := flag.String("width", widthDefault, "Width (1920 for 1080p, 1280 for 720p and 3840 for 2160p)")
 	noAudio := flag.Bool("noAudio", false, "Video without audio")
 	ffmpegPath := flag.String("ffmpeg", "", "FFmpeg path")
+	ffprobePath := flag.String("ffprobe", "", "FFprobe path")
 	flag.Parse()
 
 	if *kbps == "" {
@@ -47,11 +49,15 @@ func main() {
 	} else {
 		ffmpeg = ffmpegDefault
 	}
+	if *ffprobePath != "" {
+		ffprobe = *ffprobePath
+	} else {
+		ffprobe = ffprobeDefault
+	}
 
 	checkFlags(showVersion, format, inputFile, outputFile)
+	info.FromMedia(ffprobe, *inputFile)
 	formatHandler(ffmpeg, *format, *inputFile, *outputFile, *channels, *vbr, *kbps, *sampleRate, *preset, *crf, *bit, *width, *noAudio)
-
-	fmt.Println("Success!")
 }
 
 func kbpsDefault(channels* string) string {
@@ -73,9 +79,9 @@ func presetDefault(format* string) string {
 	var preset string
 
 	switch *format {
-	case "av1":
+	case av1Format:
 		preset = presetAv1Default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-	case "h265":			
+	case h265Format:			
 		preset = presetH265Default
     default:
 		preset = ""
@@ -88,9 +94,9 @@ func crfDefault(format* string) string {
 	var crf string
 
 	switch *format {
-	case "av1":
+	case av1Format:
 		crf = crfAv1Default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-	case "h265":			
+	case h265Format:			
 		crf = crfH265Default
     default:
 		crf = crfAv1Default
@@ -112,7 +118,7 @@ func checkFlags(showVersion* bool, format* string, inputFile* string, outputFile
 	showVersions(showVersion)
 
 	if *format == "" || *inputFile == "" || *outputFile == "" {
-		log.Fatal("You must specify the format, input file, and output file.")
+		log.Fatal("Error: You must specify the format, input file, and output file.")
 	}
 }
 
@@ -120,19 +126,19 @@ func formatHandler(ffmpeg, format, inputFile, outputFile, channels, vbr, kbps, s
 	var err error
 
 	switch format {
-    case "aac":
+    case aacFormat:
 		err = aac.Convert(ffmpeg, inputFile, outputFile, channels, vbr, kbps, sampleRate)
-	case "eac3":
+	case eac3Format:
 		err = eac3.Convert(ffmpeg, inputFile, outputFile, channels, kbps, sampleRate)	
-	case "av1":
+	case av1Format:
 		err = av1.Convert(ffmpeg, inputFile, outputFile, preset, crf, bit, width, noAudio)
-	case "h265":	
+	case h265Format:	
 		err = h265.Convert(ffmpeg, inputFile, outputFile, preset, crf, bit, width, noAudio)
     default:
-        log.Fatal("Unsupported format")
+        log.Fatal("Error: Unsupported format")
     }
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error: ", err)
 	}
 }

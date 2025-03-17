@@ -3,13 +3,10 @@ package aac
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
 
+	"edconv/cmd"
 	"edconv/converter"
 )
-
-const codec = "libfdk_aac"
 
 func Convert(ffmpeg, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate string) error {
 	values := []string{}
@@ -36,25 +33,15 @@ func Convert(ffmpeg, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate 
 		values = append(values, []string{"-vbr", vbr}...)
 	} else {
 		kbps := fmt.Sprintf("%sk", kbpsIn)
-
 		values = append(values, []string{"-b:a", kbps}...)
 	}
 
 	values = append(values, endValues[:]...)
 
-	cmd := exec.Command(ffmpeg, values[:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
-	if err != nil { 
-		return fmt.Errorf("error: %v", err) 
-	}
-
-	return nil
+	return cmd.Run(ffmpeg, values)
 }
 
-func channelsHandler(channelsIn string) (string, []string) {
+func channelsHandler(channelsIn string) (string, []string){
 	var channel string
 	var af []string
 
@@ -64,15 +51,12 @@ func channelsHandler(channelsIn string) (string, []string) {
 	case "62":
 		channel = "2"
 		af = append(af, "-af")
-		//af = append(af, "pan=stereo| FL=0.5*FL + 0.5*FC + 0.5*SL + 0.5*LFE | FR=0.5*FR + 0.5*FC + 0.5*SR + 0.5*LFE")
-		//af = append(af, "pan=stereo|FL=0.8*FL+0.5*FC+0.3*SL+0.3*LFE|FR=0.8*FR+0.5*FC+0.3*SR+0.3*LFE")
-		//af = append(af, "lowpass=c=LFE:f=120,volume=1.6,pan=stereo|FL=0.5*FC+0.707*FL+0.707*BL+0.5*LFE|FR=0.5*FC+0.707*FR+0.707*BR+0.5*LFE")
-		af = append(af, "lowpass=c=LFE:f=120,volume=1.6,pan=stereo|FL=0.8*FL+0.5*FC+0.6*BL+0.4*LFE|FR=0.8*FR+0.5*FC+0.6*BR+0.4*LFE")
+		af = append(af, filterChannels62)
 	case "6":
 		channel = "6"
     default:
-        log.Fatal("Unsupported number of channels")
+        log.Fatal("Error: Unsupported number of channels")
     }
 
-	return channel,af
+	return channel, af
 }
