@@ -8,7 +8,8 @@
 
 ## Supported formats
 
-Audio: `AAC, E-AC3, AV1 (SVT) and H.265 (x265)`
+Video: `AV1 (SVT) and H.265 (x265)`
+Audio: `AAC and E-AC3`
 
 ## Usage
 
