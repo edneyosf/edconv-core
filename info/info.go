@@ -39,7 +39,7 @@ func FromMedia(ffprobe, input string) {
 		mediaInfoString := string(mediaInfoJSON)
 		
 		if err == nil {
-			fmt.Println("info=" + mediaInfoString)
+			fmt.Println("mediaInfo=" + mediaInfoString)
 		} else {
 			log.Fatal("Error: ", err)
 		}

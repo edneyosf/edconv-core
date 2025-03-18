@@ -1,7 +1,7 @@
 package main
 
 const appName = "Edconv"
-const version = "1.2.7"
+const version = "1.2.8"
 const ffmpegDefault = "./bin/ffmpeg"
 const ffprobeDefault = "./bin/ffprobe"
 const ffmpegVersion = "7.1.1"
