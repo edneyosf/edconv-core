@@ -2,7 +2,7 @@
 
 <img src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white"/> <img src="https://shields.io/badge/FFmpeg-%23171717.svg?logo=ffmpeg&style=for-the-badge&labelColor=171717&logoColor=5cb85c"/>
 
-[![Version](https://img.shields.io/badge/Version-1.2.8-blue)]()
+[![Version](https://img.shields.io/badge/Version-1.2.9-blue)]()
 [![Version](https://img.shields.io/badge/GoLang-v1.24.0-blue)]()
 [![Version](https://img.shields.io/badge/FFmpeg-v7.1.1-blue)]()
 
@@ -16,9 +16,9 @@ Audio: `AAC and E-AC3`
 
 ```
   -bit string
-        Pixel format (8 for 8bit and 10 for 10bit) (default "8")
+        Pixel format (8 for 8bit and 10 for 10bit)
   -channels string
-        Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound and 62 for downmixing 5.1 to stereo (default "2")
+        Number of channels: 2 for stereo, 6 for 5.1 surround sound, 8 for 7.1 surround sound and 62 for downmixing 5.1 to stereo
   -crf string
         Constant Rate Factor (0-63 for av1 and 0-51 for h265)
   -ffmpeg string
@@ -44,5 +44,5 @@ Audio: `AAC and E-AC3`
   -version
         Show the version of the application
   -width string
-        Width (1920 for 1080p, 1280 for 720p and 3840 for 2160p) (default "1920")
+        Width (1920 for 1080p, 1280 for 720p and 3840 for 2160p)
 ```

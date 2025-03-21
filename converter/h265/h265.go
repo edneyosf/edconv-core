@@ -17,9 +17,6 @@ func Convert(ffmpeg, inputFile, outputFile, preset, crf, bitIn, width string, no
 		"-c:v", codec,
 		"-preset", preset,
 		"-crf", crf,
-		"-pix_fmt", bit,
-		"-vf", fmt.Sprintf("scale=%s:-1", width),
-		"-b:v", "0",
 	}
 	endValues := []string{outputFile}
 
@@ -29,6 +26,12 @@ func Convert(ffmpeg, inputFile, outputFile, preset, crf, bitIn, width string, no
 		values = append(values, "-an")
 	} else {
 		values = append(values, []string{"-c:a", "copy"}...)
+	}
+	if bit != "" {
+		values = append(values, []string{"-pix_fmt", bit}...)
+	}
+	if width != "" {
+		values = append(values, []string{"-vf", fmt.Sprintf("scale=%s:-1", width)}...)
 	}
 
 	values = append(values, endValues[:]...)
@@ -44,6 +47,8 @@ func bitHandler(bitIn string) string {
 		bit = bit8
 	case "10":
 		bit = bit10
+	case "":
+		bit = ""	
     default:
         log.Fatal("Error: Unsupported pixel format")
     }

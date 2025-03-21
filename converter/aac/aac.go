@@ -16,10 +16,7 @@ func Convert(ffmpeg, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate 
 		"-loglevel", converter.LogLevel,
 		"-c:a", codec,
 	}
-	endValues := []string{
-		"-ac", channels, 
-		outputFile,
-	}
+	endValues := []string{outputFile}
 
 	values = append(values, startValues[:]...)
 
@@ -34,6 +31,9 @@ func Convert(ffmpeg, inputFile, outputFile, channelsIn, vbr, kbpsIn, sampleRate 
 	} else {
 		kbps := fmt.Sprintf("%sk", kbpsIn)
 		values = append(values, []string{"-b:a", kbps}...)
+	}
+	if channels != "" {
+		values = append(values, []string{"-ac", channels}...)
 	}
 
 	values = append(values, endValues[:]...)
@@ -54,6 +54,8 @@ func channelsHandler(channelsIn string) (string, []string){
 		af = append(af, filterChannels62)
 	case "6":
 		channel = "6"
+	case "":
+		channel = ""	
     default:
         log.Fatal("Error: Unsupported number of channels")
     }
